@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private static void GDriveHttp() throws IOException, GeneralSecurityException {
+    // Connect the app with Google Drive
+    private static void gDriveHttp() throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         return credential;
     }
 
-
+    // Create the notification creator module
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "download";
