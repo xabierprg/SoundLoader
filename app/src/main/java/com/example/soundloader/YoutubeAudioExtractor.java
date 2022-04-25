@@ -30,6 +30,10 @@ public class YoutubeAudioExtractor {
     static String downloadError;
     static File songPath;
 
+    /**
+     * Downloads the mp3 file from the yt url.
+     * @param ytUrl String that contains the yt url.
+     */
     public static void downloadAudio(String ytUrl) {
         downloadError = "";
 
@@ -73,6 +77,7 @@ public class YoutubeAudioExtractor {
 
                     outstream.close();
                 } catch (ExtractionException | YoutubeRequestException | VideoIsUnavailable | IOException e) {
+                    MainActivity.builder.setOngoing(false);
                     downloadError = e.toString();
                 }
             }
@@ -83,6 +88,10 @@ public class YoutubeAudioExtractor {
 
     }
 
+    /**
+     * Replace some letters to make the file downloadable.
+     * @param inputName String that contains the name of the mp3 android file.
+     */
     public static String sanitizeFilename(String inputName) {
         return inputName.replaceAll("[^a-zA-Z0-9-_\\.]", "_").replace("-","");
     }
