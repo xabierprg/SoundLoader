@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#973636"
+    android:background="#00191717"
     tools:context=".MainActivity">
 
     <EditText
@@ -26,7 +26,7 @@
         android:layout_width="290dp"
         android:layout_height="47dp"
         android:background="@drawable/round_style"
-        android:backgroundTint="#8EC6C6"
+        android:backgroundTint="@color/ic_launcher_background"
         android:gravity="center"
         android:text="Insert a YouTube URL"
         android:textColor="#000000"
@@ -46,7 +46,7 @@
         android:backgroundTint="#2D919E"
         android:text="download"
         android:textColor="#000000"
-        app:backgroundTint="#8EC6C6"
+        app:backgroundTint="@color/ic_launcher_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
