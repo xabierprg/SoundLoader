@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         return credential;
     }
 
-    // Create the notification creator module
+    // Create the notification creator module.
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "download";
