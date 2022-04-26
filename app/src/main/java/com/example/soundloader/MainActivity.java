@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import firebase.com.protolitewrapper.BuildConfig;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         btnDownload = findViewById(R.id.btnDownload);
         etUrl = findViewById(R.id.etUrl);
 
-        ColorDrawable actionBarColor = new ColorDrawable(Color.parseColor("#8EC6C6"));
+        ColorDrawable actionBarColor = new ColorDrawable(Color.parseColor("#A03939"));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(actionBarColor);
         actionBar.setTitle((Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>")));
@@ -121,10 +120,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean isFinishing() {
+    protected void onDestroy() {
+        super.onDestroy();
+        builder.setOngoing(false);
         manager.cancelAll();
         YoutubeAudioExtractor.songPath.delete();
-        return super.isFinishing();
     }
-
 }
