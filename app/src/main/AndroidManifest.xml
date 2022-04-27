@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
 
+        <service
+            android:name="com.example.soundloader.ClearService"
+            android:stopWithTask="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

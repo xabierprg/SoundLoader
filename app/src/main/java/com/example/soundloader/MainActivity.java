@@ -27,18 +27,17 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    LaunchYtDownload downloader;
     EditText etUrl;
     Button btnDownload;
-    static NotificationManager manager;
-    static NotificationCompat.Builder builder;
-    static PendingIntent resultPendingIntent;
-
-
+    int notificationId = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startService(new Intent(getBaseContext(), ClearService.class));
+
         btnDownload = findViewById(R.id.btnDownload);
         etUrl = findViewById(R.id.etUrl);
 
@@ -46,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(actionBarColor);
         actionBar.setTitle((Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>")));
-
-        createNotificationChannel();
 
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,40 +55,19 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Toast.makeText(getApplicationContext(), "Starting the download...", Toast.LENGTH_LONG).show();
-                YoutubeAudioExtractor.downloadAudio(etUrl.getText().toString());
+
+                downloader = new LaunchYtDownload(
+                        etUrl.getText().toString(),
+                        MainActivity.this,
+                        notificationId);
+
+                downloader.downloadAudio();
+
                 etUrl.setText("");
+                notificationId++;
             }
 
         });
-
-    }
-
-    // Create the notification creator module.
-    public void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "download";
-            String description = "download finished";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("1", name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-            builder = new NotificationCompat
-                    .Builder(this, "1")
-                    .setSmallIcon(R.drawable.ic_baseline_arrow_downward_24);
-
-            Intent notificationIntent = new Intent(this, MainActivity.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(
-                    this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            builder.setContentIntent(contentIntent);
-
-            manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-            Intent intent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-            stackBuilder.addNextIntentWithParentStack(intent);
-            resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        }
 
     }
 
@@ -122,8 +98,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        builder.setOngoing(false);
-        manager.cancelAll();
-        YoutubeAudioExtractor.songPath.delete();
+        downloader.killDownloadProcess();
     }
 }
