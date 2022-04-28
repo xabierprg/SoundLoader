@@ -24,10 +24,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
 
     LaunchYtDownload downloader;
+    ArrayList<LaunchYtDownload> downloadThreads;
     EditText etUrl;
     Button btnDownload;
     int notificationId = 1;
@@ -40,11 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
         btnDownload = findViewById(R.id.btnDownload);
         etUrl = findViewById(R.id.etUrl);
+        downloadThreads = new ArrayList<>();
 
-        ColorDrawable actionBarColor = new ColorDrawable(Color.parseColor("#A03939"));
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(actionBarColor);
-        actionBar.setTitle((Html.fromHtml("<font color=\"black\">" + getString(R.string.app_name) + "</font>")));
 
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,14 +61,27 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this,
                         notificationId);
 
-                downloader.downloadAudio();
-
-                etUrl.setText("");
                 notificationId++;
+                downloader.downloadAudio();
+                downloadThreads.add(downloader);
+                etUrl.setText("");
             }
 
         });
 
+    }
+
+    /**
+     * Create about dialog with version and dev information.
+     */
+    public void createAboutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(
+                    "SoundLoader \n" +
+                    "Version: " + BuildConfig.VERSION_NAME + "\n" +
+                    "Created by xabierprg");
+        builder.create();
+        builder.show();
     }
 
     @Override
@@ -85,19 +98,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void createAboutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(
-                "SoundLoader \n" +
-                "Version: " + BuildConfig.VERSION_NAME + "\n" +
-                "Created by xabierprg");
-        builder.create();
-        builder.show();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        downloader.killDownloadProcess();
+
+        // Killing download process.
+        for(LaunchYtDownload lyd : downloadThreads) {
+            lyd.killDownloadProcess();
+        }
+
     }
+
 }

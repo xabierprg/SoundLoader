@@ -2,6 +2,10 @@ package com.example.soundloader;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.JsonToken;
+import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import com.github.kotvertolet.youtubejextractor.YoutubeJExtractor;
 import com.github.kotvertolet.youtubejextractor.exception.ExtractionException;
@@ -23,7 +27,7 @@ public class LaunchYtDownload {
     public YoutubeJExtractor youtubeJExtractor;
     public Thread thread;
     public VideoPlayerConfig videoData;
-    public String downloadError;
+    public String downloadError = "";
     public File songPath;
     public String ytUrl;
     public Context ctx;
@@ -57,34 +61,51 @@ public class LaunchYtDownload {
                     URLConnection conn = new URL(audioStreams.get(0).getUrl()).openConnection();
                     InputStream is = conn.getInputStream();
 
+                    videoData.getVideoDetails().getLengthSeconds();
+
                     String fileName = sanitizeFilename(videoData.getVideoDetails().getTitle());
 
                     File downloadFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                     songPath = new File(downloadFile.getPath() + "/" + fileName + ".mp3");
 
-                    OutputStream outstream = new FileOutputStream(songPath);
+                    OutputStream os = new FileOutputStream(songPath);
                     byte[] buffer = new byte[4096];
                     int len;
 
-                    cnc.getBuilder().setContentText("Downloading " + fileName + ".mp3")
+                    cnc.getBuilder()
+                            .setContentText("Downloading " + fileName + ".mp3")
                             .setOngoing(true);
-                    cnc.getManager().notify(1, cnc.getBuilder().build());
+                    cnc.getManager().notify(notificationId, cnc.getBuilder().build());
 
+                    int cont = 0;
+                    double var = 0.25274725274725274725274725274725;
+                    int videolen = Integer.parseInt(videoData.getVideoDetails().getLengthSeconds());
 
                     while ((len = is.read(buffer)) > 0) {
-                        outstream.write(buffer, 0, len);
+                        os.write(buffer, 0, len);
+
+                        cnc.getBuilder()
+                                .setContentText("Downloading " + fileName + ".mp3")
+                                .setProgress(videolen,(int)(cont*var),false)
+                                .setSilent(true)
+                                .setOngoing(true);
+                        cnc.getManager().notify(notificationId, cnc.getBuilder().build());
+
+                        cont++;
                     }
 
                     cnc.getBuilder()
-                            .setContentText("Completed download!")
-                            .setProgress(0,0,false)
+                            .setContentText("Download complete!")
+                            .setProgress(0, 0, false)
+                            .setSilent(false)
                             .setOngoing(false);
-                    cnc.getManager().notify(1, cnc.getBuilder().build());
+                    cnc.getManager().notify(notificationId, cnc.getBuilder().build());
 
-                    outstream.close();
+                    os.close();
                 } catch (ExtractionException | YoutubeRequestException | VideoIsUnavailable | IOException e) {
-                    cnc.destroyNotifications();
-                    downloadError = e.toString();
+                    killDownloadProcess();
+                    downloadError += e.getMessage() + "\n";
+                    Log.e("Error", downloadError);
                 }
             }
 
@@ -102,9 +123,15 @@ public class LaunchYtDownload {
         return inputName.replaceAll("[^a-zA-Z0-9-_\\.]", "_").replace("-","");
     }
 
-    // Destroy the yt download thread
+    /**
+     * Destroy Notifications and download threads.
+     */
     public void killDownloadProcess() {
         cnc.destroyNotifications();
+    }
+
+    public String getDownloadError() {
+        return downloadError;
     }
 
 }

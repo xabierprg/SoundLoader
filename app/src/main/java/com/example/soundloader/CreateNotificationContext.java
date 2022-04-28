@@ -1,7 +1,6 @@
 package com.example.soundloader;
 
 import android.app.DownloadManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -18,7 +17,6 @@ public class CreateNotificationContext {
     public NotificationManager manager;
     public NotificationCompat.Builder builder;
 
-
     public CreateNotificationContext(Context ctx, int id) {
         this.ctx = ctx;
         this.id = id;
@@ -26,7 +24,9 @@ public class CreateNotificationContext {
         createNotificationChannel();
     }
 
-    // Create the notification creator module.
+    /**
+     * Create a notification channel.
+     */
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "download";
@@ -51,6 +51,9 @@ public class CreateNotificationContext {
 
     }
 
+    /**
+     * Destroy notification manger.
+     */
     public void destroyNotifications() {
         manager.cancel(id);
     }
