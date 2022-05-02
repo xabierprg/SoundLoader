@@ -50,7 +50,7 @@
         android:layout_height="71dp"
         android:background="@drawable/round_style"
         android:backgroundTint="#2D919E"
-        android:text="download"
+        android:text="@string/download_button"
         android:textColor="@color/cardview_light_background"
         app:backgroundTint="@color/ic_launcher_background"
         app:layout_constraintBottom_toBottomOf="parent"

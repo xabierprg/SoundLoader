@@ -40,7 +40,7 @@ public class CreateNotificationContext {
 
             Intent notificationIntent = new Intent(ctx, MainActivity.class);
             PendingIntent contentIntent = PendingIntent.getActivity(
-                    ctx, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    ctx, id, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
             builder.setContentIntent(contentIntent);
             manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -54,7 +54,7 @@ public class CreateNotificationContext {
     /**
      * Destroy notification manger.
      */
-    public void destroyNotifications() {
+    public void destroyNotification() {
         manager.cancel(id);
     }
 

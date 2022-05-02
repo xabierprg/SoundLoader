@@ -3,4 +3,5 @@
     <string name="edit_text">paste a youtube url</string>
     <string name="about_menu">About</string>
     <string name="main_text">Insert a YouTube URL</string>
+    <string name="download_button">download</string>
 </resources>

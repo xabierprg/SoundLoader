@@ -8,9 +8,9 @@ android {
     defaultConfig {
         applicationId "com.example.soundloader"
         minSdk 23
-        targetSdk 23
+        targetSdk 31
         versionCode 1
-        versionName '0.40'
+        versionName '0.41'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
