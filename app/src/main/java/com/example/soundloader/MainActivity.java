@@ -1,7 +1,7 @@
 package com.example.soundloader;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import java.util.ArrayList;
+
+import firebase.com.protolitewrapper.BuildConfig;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,33 +40,34 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         startService(new Intent(getBaseContext(), ClearService.class));
 
-        verifyStoragePermissions(this);
-
         btnDownload = findViewById(R.id.btnDownload);
         downloadThreads = new ArrayList<>();
 
         etUrl = findViewById(R.id.etUrl);
         etUrl.requestFocus();
 
-
         btnDownload.setOnClickListener(view -> {
-            if(etUrl.getText().toString().isEmpty()) {
-                Toast.makeText(getApplicationContext(),
-                        "Insert a youtube url", Toast.LENGTH_LONG).show();
-                return;
+
+            if(verifyStoragePermissions(this)) {
+
+                if (etUrl.getText().toString().isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Insert a youtube url", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Toast.makeText(getApplicationContext(), "Starting the download...", Toast.LENGTH_LONG).show();
+
+                downloader = new LaunchYtDownload(
+                        etUrl.getText().toString(),
+                        MainActivity.this,
+                        notificationId);
+
+                notificationId++;
+                downloader.downloadAudio();
+                downloadThreads.add(downloader);
+                etUrl.setText("");
             }
 
-            Toast.makeText(getApplicationContext(), "Starting the download...", Toast.LENGTH_LONG).show();
-
-            downloader = new LaunchYtDownload(
-                    etUrl.getText().toString(),
-                    MainActivity.this,
-                    notificationId);
-
-            notificationId++;
-            downloader.downloadAudio();
-            downloadThreads.add(downloader);
-            etUrl.setText("");
         });
 
     }
@@ -75,9 +78,20 @@ public class MainActivity extends AppCompatActivity {
     public void createAboutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(
-                    "SoundLoader \n" +
-                    "Version: " + BuildConfig.VERSION_NAME + "\n" +
-                    "Created by xabierprg");
+                "SoundLoader \n" +
+                        "Version: " + BuildConfig.VERSION_NAME + "\n" +
+                        "Created by xabierprg");
+        builder.create();
+        builder.show();
+    }
+
+    /**
+     * Create permission dialog with information about enabling permissions.
+     */
+    public void createPermissionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("SoundLoader needs access to your files to download content from youtube. " +
+                "Go to settings and enable the permission to access your local data.");
         builder.create();
         builder.show();
     }
@@ -95,21 +109,21 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Checks if the app has permission to write to device storage
-     *
      * If the app does not has permission then the user will be prompted to grant permissions
      */
-    public static void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    protected boolean verifyStoragePermissions(Activity activity) {
+        if (ContextCompat.checkSelfPermission(
+                activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
+            return true;
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            createPermissionsDialog();
+            return false;
+        } else {
+            requestPermissions(PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            return false;
         }
+
     }
 
     @Override
@@ -117,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         // Killing download process.
-        for(LaunchYtDownload lyd : downloadThreads) {
+        for (LaunchYtDownload lyd : downloadThreads) {
             lyd.killDownloadProcess();
         }
 
