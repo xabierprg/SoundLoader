@@ -2,7 +2,6 @@ package com.example.soundloader;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -44,7 +43,7 @@ public class DownloadActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.playFloatingButton);
         fab.setOnClickListener(view -> {
-            Intent intent = new Intent(DownloadActivity.this, MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
 
@@ -62,7 +61,7 @@ public class DownloadActivity extends AppCompatActivity {
 
                 LaunchYtDownload downloader = new LaunchYtDownload(
                         etUrl.getText().toString(),
-                        DownloadActivity.this,
+                        this,
                         notificationId);
 
                 etUrl.setText("");
@@ -74,37 +73,12 @@ public class DownloadActivity extends AppCompatActivity {
 
         });
 
-
-
-    }
-
-    /**
-     * Create about dialog with version and dev information.
-     */
-    public void createAboutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(
-                    "SoundLoader \n" +
-                    "Version: " + BuildConfig.VERSION_NAME + "\n" +
-                    "Created by xabierprg");
-        builder.create();
-        builder.show();
-    }
-
-    /**
-     * Create permission dialog with information about enabling permissions.
-     */
-    public void createPermissionsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("SoundLoader needs access to your files to download content from youtube. " +
-                "Go to settings and enable the permission to access your local data.");
-        builder.create();
-        builder.show();
     }
 
     /**
      * Checks if the app has permission to write to device storage
      * If the app does not has permission then the user will be prompted to grant permissions
+     * DownloadActivity version of the method
      */
     protected boolean verifyStoragePermissions(Activity activity) {
         if (ContextCompat.checkSelfPermission(
@@ -112,7 +86,7 @@ public class DownloadActivity extends AppCompatActivity {
 
             return true;
         } else if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            createPermissionsDialog();
+            DialogManager.createPermissionsDialogDownload(this);
             return false;
         } else {
             requestPermissions(PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
@@ -126,7 +100,7 @@ public class DownloadActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_info, menu);
         menu.getItem(0).setOnMenuItemClickListener(menuItem -> {
-            createAboutDialog();
+            DialogManager.createAboutDialog(this);
             return false;
         });
         return true;

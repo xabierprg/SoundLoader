@@ -1,9 +1,12 @@
 package com.example.soundloader;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import android.app.AlertDialog;
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -17,23 +20,34 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startService(new Intent(getBaseContext(), ClearService.class));
 
-        displaySongs();
+        if(verifyStoragePermissions(this)) {
+            displaySongs();
+        }
 
         FloatingActionButton fab = findViewById(R.id.downloadFloatingButton);
         fab.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, DownloadActivity.class);
+            Intent intent = new Intent(this, DownloadActivity.class);
             startActivity(intent);
         });
 
         SwipeRefreshLayout swipeList = findViewById(R.id.swipeList);
         swipeList.setOnRefreshListener(() -> {
-            displaySongs();
+            if(verifyStoragePermissions(this)) {
+                displaySongs();
+            }
             swipeList.setRefreshing(false);
         });
 
@@ -43,7 +57,10 @@ public class MainActivity extends AppCompatActivity {
      * Display the main page song list.
      */
     public void displaySongs() {
-        final ArrayList<File> mySongs = findSong(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+        ArrayList<Song> mySongs = new ArrayList<>();
+        for(File f : findFiles(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))) {
+             mySongs.add(new Song(f));
+        }
 
         String[] items = new String[mySongs.size()];
         for (int i = mySongs.size()-1; i >= 0; i--) {
@@ -55,20 +72,21 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> myAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, items);
         ListView listView = findViewById(R.id.songList);
         listView.setAdapter(myAdapter);
+        listView.setOnItemClickListener((adapterView, view, i, l) -> MediaPlayerManager.playSong(
+                this, (new Song(listView.getItemAtPosition(i).toString()).getFileUri())));
     }
 
     /**
      * Search the songs for the main page list.
      */
-    public ArrayList<File> findSong(File file) {
+    public ArrayList<File> findFiles(File file) {
         ArrayList<File> arrayList = new ArrayList<>();
-
         File[] files = file.listFiles();
 
         if (files != null) {
             for (File singlefile : files) {
                 if (singlefile.isDirectory() && !singlefile.isHidden()) {
-                    arrayList.addAll(findSong(singlefile));
+                    arrayList.addAll(findFiles(singlefile));
                 } else {
                     if (singlefile.getName().endsWith(".mp3") || singlefile.getName().endsWith(".wav")) {
                         arrayList.add(singlefile);
@@ -80,26 +98,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Create about dialog with version and dev information.
+     * Checks if the app has permission to write to device storage
+     * If the app does not has permission then the user will be prompted to grant permissions
+     * MainActivity version of the method
      */
-    public void createAboutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(
-                "SoundLoader \n" +
-                "Version: " + BuildConfig.VERSION_NAME + "\n" +
-                "Created by xabierprg");
-        builder.create();
-        builder.show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        for(LaunchYtDownload thread : DownloadActivity.downloadThreads) {
-            if(thread.getThread().isAlive()) {
-                thread.killDownloadProcess();
-            }
+    protected boolean verifyStoragePermissions(Activity activity) {
+        if (ContextCompat.checkSelfPermission(
+                activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            DialogManager.createPermissionsDialogMain(this);
+            return false;
+        } else {
+            requestPermissions(PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            return true;
         }
 
     }
@@ -109,10 +121,24 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_info, menu);
         menu.getItem(0).setOnMenuItemClickListener(menuItem -> {
-            createAboutDialog();
+            DialogManager.createAboutDialog(this);
             return false;
         });
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(DownloadActivity.downloadThreads != null) {
+            for (LaunchYtDownload thread : DownloadActivity.downloadThreads) {
+                if (thread.getThread().isAlive()) {
+                    thread.killDownloadProcess();
+                }
+            }
+        }
+
     }
 
 }
