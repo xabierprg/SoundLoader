@@ -2,8 +2,9 @@ package com.example.soundloader;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.Looper;
 import android.util.Log;
-
+import android.widget.Toast;
 import com.github.kotvertolet.youtubejextractor.YoutubeJExtractor;
 import com.github.kotvertolet.youtubejextractor.exception.ExtractionException;
 import com.github.kotvertolet.youtubejextractor.exception.VideoIsUnavailable;
@@ -20,38 +21,35 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Objects;
 
+
 public class LaunchYtDownload {
 
-    public YoutubeJExtractor youtubeJExtractor;
-    public Thread thread;
-    public VideoPlayerConfig videoData;
-    public String downloadError = "";
-    public File songPath;
-    public String ytUrl;
-    public Context ctx;
-    public CreateNotificationContext cnc;
-    public int notificationId;
+    private Thread thread;
+    private File songPath;
+    private final String ytUrl;
+    private final Context ctx;
+    private final CreateNotificationContext cnc;
+    private final int notificationId;
+
 
     public LaunchYtDownload(String ytUrl, Context ctx, int notificationId) {
         this.ytUrl = ytUrl;
         this.ctx = ctx;
         this.notificationId = notificationId;
+
+        cnc = new CreateNotificationContext(ctx, notificationId);
     }
 
     /**
      * Downloads the mp3 file from the yt url.
      */
     public void downloadAudio() {
-        downloadError = "";
 
         thread = new Thread(() -> {
-            youtubeJExtractor = new YoutubeJExtractor();
-            videoData = null;
-
-            cnc = new CreateNotificationContext(ctx, notificationId);
 
             try {
-                videoData = youtubeJExtractor.extract(ytUrl.replace("https://youtu.be/", ""));
+                YoutubeJExtractor youtubeJExtractor = new YoutubeJExtractor();
+                VideoPlayerConfig videoData = youtubeJExtractor.extract(ytUrl.replace("https://youtu.be/", ""));
                 List<AdaptiveAudioStream> audioStreams = Objects.requireNonNull(
                         videoData.getStreamingData()).getAdaptiveAudioStreams();
                 URLConnection conn = new URL(audioStreams.get(0).getUrl()).openConnection();
@@ -61,6 +59,14 @@ public class LaunchYtDownload {
 
                 File downloadFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                 songPath = new File(downloadFile.getPath() + "/" + fileName + ".mp3");
+
+                if(songPath.exists()) {
+                    Looper.prepare();
+                    Toast.makeText(ctx,
+                            "This song already exists in your data. Delete it and try again",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 cnc.getBuilder()
                         .setContentText("Downloading " + fileName + ".mp3")
@@ -72,7 +78,7 @@ public class LaunchYtDownload {
                 int len;
 
                 int cont = 0;
-                double var = 0.25274725274725274725274725274725;
+                double cons = 0.25274725274725274725274725274725;
                 int videolen = Integer.parseInt(Objects.requireNonNull(
                         Objects.requireNonNull(videoData.getVideoDetails()).getLengthSeconds()));
 
@@ -81,7 +87,7 @@ public class LaunchYtDownload {
 
                     cnc.getBuilder()
                             .setContentText("Downloading " + fileName + ".mp3")
-                            .setProgress(videolen,(int)(cont*var),false)
+                            .setProgress(videolen,(int)(cont*cons),false)
                             .setOnlyAlertOnce(true)
                             .setOngoing(true);
                     cnc.getManager().notify(notificationId, cnc.getBuilder().build());
@@ -98,11 +104,12 @@ public class LaunchYtDownload {
                 cnc.getManager().notify(notificationId, cnc.getBuilder().build());
 
                 os.close();
+
             } catch (ExtractionException | YoutubeRequestException | VideoIsUnavailable | IOException e) {
                 killDownloadProcess();
-                downloadError += e.getMessage() + "\n";
-                Log.e("Error", downloadError);
+                Log.e("Error", e.getMessage());
             }
+
         });
 
         thread.start();
@@ -113,7 +120,15 @@ public class LaunchYtDownload {
      * Destroy Notifications and download threads.
      */
     public void killDownloadProcess() {
+        songPath.delete();
         cnc.destroyNotification();
+    }
+
+    /**
+     * Get the thread.
+     */
+    public Thread getThread() {
+        return thread;
     }
 
 }

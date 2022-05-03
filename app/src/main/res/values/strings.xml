@@ -4,4 +4,6 @@
     <string name="about_menu">About</string>
     <string name="main_text">Insert a YouTube URL</string>
     <string name="download_button">download</string>
+    <string name="todo1">TODO</string>
+    <string name="todo2">TODO</string>
 </resources>

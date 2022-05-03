@@ -2,62 +2,53 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cardview_dark_background"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/etUrl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/custom_input"
-        android:ems="10"
-        android:gravity="center"
-        android:hint="@string/edit_text"
-        android:inputType="textUri"
-        android:minHeight="48dp"
-        android:padding="5dp"
-        android:textColor="@color/cardview_light_background"
-        android:textColorHint="#8D000000"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/downloadFloatingButton"
+        android:layout_width="73dp"
+        android:layout_height="71dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:contentDescription="@string/todo2"
+        android:focusable="true"
+        android:src="@android:drawable/stat_sys_download_done"
+        app:backgroundTint="@color/ic_launcher_background"
+        app:fabCustomSize="71dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.362"
-        tools:ignore="SpeakableTextPresentCheck" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="290dp"
-        android:layout_height="47dp"
-        android:background="@drawable/round_style"
-        android:backgroundTint="@color/ic_launcher_background"
-        android:gravity="center"
-        android:text="@string/main_text"
-        android:textColor="@color/cardview_light_background"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.157" />
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="ImageContrastCheck" />
 
-    <Button
-        android:id="@+id/btnDownload"
-        android:layout_width="136dp"
-        android:layout_height="71dp"
-        android:background="@drawable/round_style"
-        android:backgroundTint="#2D919E"
-        android:text="@string/download_button"
-        android:textColor="@color/cardview_light_background"
-        app:backgroundTint="@color/ic_launcher_background"
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etUrl"
-        app:layout_constraintVertical_bias="0.635" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/songList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

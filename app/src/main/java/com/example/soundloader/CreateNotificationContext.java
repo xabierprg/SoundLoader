@@ -17,6 +17,7 @@ public class CreateNotificationContext {
     public NotificationManager manager;
     public NotificationCompat.Builder builder;
 
+
     public CreateNotificationContext(Context ctx, int id) {
         this.ctx = ctx;
         this.id = id;
