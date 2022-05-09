@@ -1,10 +1,12 @@
-package com.example.soundloader;
+package com.example.soundloader.YtDownload;
 
 import android.content.Context;
 import android.os.Environment;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.soundloader.Notifications.CreateNotificationContext;
 import com.github.kotvertolet.youtubejextractor.YoutubeJExtractor;
 import com.github.kotvertolet.youtubejextractor.exception.ExtractionException;
 import com.github.kotvertolet.youtubejextractor.exception.VideoIsUnavailable;
@@ -30,7 +32,6 @@ public class LaunchYtDownload {
     private final Context ctx;
     private final CreateNotificationContext cnc;
     private final int notificationId;
-
 
     public LaunchYtDownload(String ytUrl, Context ctx, int notificationId) {
         this.ytUrl = ytUrl;

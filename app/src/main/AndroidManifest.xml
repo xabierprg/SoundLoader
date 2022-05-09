@@ -23,12 +23,16 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         tools:targetApi="s">
 
+        <receiver
+            android:name=".Services.NotificationActionService"
+            android:exported="false"/>
+
         <service
-            android:name="com.example.soundloader.ClearService"
+            android:name=".Services.ClearService"
             android:stopWithTask="false" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +41,7 @@
         </activity>
 
         <activity
-            android:name=".DownloadActivity"
+            android:name=".Activities.DownloadActivity"
             android:exported="true">
         </activity>
 

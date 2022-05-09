@@ -1,4 +1,4 @@
-package com.example.soundloader;
+package com.example.soundloader.Activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -13,6 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import com.example.soundloader.Managers.DialogManager;
+import com.example.soundloader.YtDownload.LaunchYtDownload;
+import com.example.soundloader.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
@@ -40,12 +44,6 @@ public class DownloadActivity extends AppCompatActivity {
 
         EditText etUrl = findViewById(R.id.etUrl);
         etUrl.requestFocus();
-
-        FloatingActionButton fab = findViewById(R.id.playFloatingButton);
-        fab.setOnClickListener(view -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        });
 
         Button btnDownload = findViewById(R.id.btnDownload);
         btnDownload.setOnClickListener(view -> {

@@ -1,4 +1,4 @@
-package com.example.soundloader;
+package com.example.soundloader.Services;
 
 import android.app.Service;
 import android.content.Intent;

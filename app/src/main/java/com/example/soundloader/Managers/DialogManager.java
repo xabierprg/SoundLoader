@@ -1,7 +1,9 @@
-package com.example.soundloader;
+package com.example.soundloader.Managers;
 
 import android.app.AlertDialog;
 import android.content.Context;
+
+import com.example.soundloader.BuildConfig;
 
 public class DialogManager {
 

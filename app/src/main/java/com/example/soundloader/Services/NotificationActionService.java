@@ -1,4 +1,4 @@
-package com.example.soundloader;
+package com.example.soundloader.Services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,4 +10,5 @@ public class NotificationActionService extends BroadcastReceiver {
         context.sendBroadcast(new Intent("TRACKS_TRACKS")
             .putExtra("actionname", intent.getAction()));
     }
+
 }

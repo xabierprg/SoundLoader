@@ -1,4 +1,4 @@
-package com.example.soundloader;
+package com.example.soundloader.Models;
 
 import android.net.Uri;
 import android.os.Environment;
