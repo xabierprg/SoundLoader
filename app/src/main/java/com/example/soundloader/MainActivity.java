@@ -2,6 +2,8 @@ package com.example.soundloader;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.Manifest;
 import android.app.Activity;
@@ -11,11 +13,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -61,19 +62,19 @@ public class MainActivity extends AppCompatActivity {
         for(File f : findFiles(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))) {
              mySongs.add(new Song(f));
         }
+        Collections.reverse(mySongs);
 
-        String[] items = new String[mySongs.size()];
-        for (int i = mySongs.size()-1; i >= 0; i--) {
-            items[(mySongs.size()-1)-i] = mySongs.get(i).getName()
-                    .replace(".mp3", "")
-                    .replace(".wav", "");
-        }
+        RecyclerView recycler = findViewById(R.id.songList);
+        recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, items);
-        ListView listView = findViewById(R.id.songList);
-        listView.setAdapter(myAdapter);
-        listView.setOnItemClickListener((adapterView, view, i, l) -> MediaPlayerManager.playSong(
-                this, (new Song(listView.getItemAtPosition(i).toString()).getFileUri())));
+        AdapterData adapter = new AdapterData(mySongs);
+        adapter.setOnClickListener(view -> {
+            MediaPlayerManager.playSong(this,
+                    mySongs.get(recycler.getChildAdapterPosition(view)).getFileUri(),
+                    recycler.getChildAdapterPosition(view),
+                    mySongs);
+        });
+        recycler.setAdapter(adapter);
     }
 
     /**
@@ -138,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        MusicNotification.destroyNotification();
 
     }
 
