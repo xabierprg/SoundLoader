@@ -6,10 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.support.v4.media.session.MediaSessionCompat;
-
+//import android.support.v4.media.session.MediaSessionCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import com.example.soundloader.R;
@@ -34,11 +32,9 @@ public class MusicNotification {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(ctx);
         //MediaSessionCompat mediaSession = new MediaSessionCompat(ctx, "tag");
 
-/*
         Intent intentDelete = new Intent(ctx, NotificationActionService.class).setAction(ACTION_DELETE);
         PendingIntent pendingIntentDelete = PendingIntent.getBroadcast(
                 ctx, 0, intentDelete,PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
-*/
 
         PendingIntent pendingIntentPrevius;
         int drw_previous;
@@ -78,8 +74,7 @@ public class MusicNotification {
                 .setContentText(song.getName())
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
-                .setOngoing(true)
-                //.setDeleteIntent(pendingIntentDelete)
+                .setDeleteIntent(pendingIntentDelete)
                 .addAction(drw_previous, "Previous", pendingIntentPrevius)
                 .addAction(playButton, "Play", pendingIntentPlay)
                 .addAction(drw_next, "Next", pendingIntentNext)
@@ -89,7 +84,7 @@ public class MusicNotification {
                 )
                 .build();
 
-        //notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notificationManagerCompat.notify(CHANNEL_ID, notification);
     }
 

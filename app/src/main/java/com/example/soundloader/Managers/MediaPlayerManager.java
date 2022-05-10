@@ -42,7 +42,7 @@ public class MediaPlayerManager {
                 MusicNotification.createNotification(
                         ctx, trackList.get(songPosition),
                         songPosition, trackList.size(),
-                        R.drawable.ic_baseline_play_arrow_24, "Paused...");
+                        R.drawable.ic_baseline_play_arrow_24, "Paused");
             }
 
         }

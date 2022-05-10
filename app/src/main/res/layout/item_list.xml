@@ -17,7 +17,7 @@
         <ImageView
             android:id="@+id/idImagen"
             android:layout_width="70dp"
-            android:layout_height="59dp"
+            android:layout_height="70dp"
             android:contentDescription="@string/todo3"
             app:srcCompat="@drawable/ic_audio_mp3_svgrepo_com" />
 
@@ -33,5 +33,13 @@
 
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="?android:attr/listDivider"
+        android:backgroundTint="#000000"
+        android:foregroundTint="#000000" />
 
 </LinearLayout>
