@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import com.example.soundloader.Adapters.AdapterData;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     public void displaySongs() {
         mySongs = new ArrayList<>();
         for (File f : findFiles(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))) {
+            Log.d("path:",f.getAbsolutePath());
             mySongs.add(new Song(f));
         }
         Collections.reverse(mySongs);
