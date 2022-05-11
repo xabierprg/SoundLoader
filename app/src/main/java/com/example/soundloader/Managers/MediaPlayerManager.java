@@ -50,7 +50,7 @@ public class MediaPlayerManager {
     }
 
     public static void resumeSong(Context ctx) {
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null && MusicNotification.getIsShowing()) {
             if (!mediaPlayer.isPlaying()) {
                 mediaPlayer.start();
                 MusicNotification.createNotification(
@@ -105,4 +105,13 @@ public class MediaPlayerManager {
     public static void setSongPosition(int songPosition) {
         MediaPlayerManager.songPosition = songPosition;
     }
+
+    public static MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public static boolean isPlaying() {
+        return mediaPlayer.isPlaying();
+    }
+
 }

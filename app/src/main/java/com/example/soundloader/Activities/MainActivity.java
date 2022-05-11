@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
-
 import com.example.soundloader.Adapters.AdapterData;
 import com.example.soundloader.Managers.DialogManager;
 import com.example.soundloader.YtDownload.LaunchYtDownload;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         startService(new Intent(getBaseContext(), ClearService.class));
 
-        if(verifyStoragePermissions(this)) {
+        if (verifyStoragePermissions(this)) {
             displaySongs();
         }
 
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         SwipeRefreshLayout swipeList = findViewById(R.id.swipeList);
         swipeList.setOnRefreshListener(() -> {
-            if(verifyStoragePermissions(this)) {
+            if (verifyStoragePermissions(this)) {
                 displaySongs();
             }
             swipeList.setRefreshing(false);
@@ -71,13 +70,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     /**
      * Display the main page song list.
      */
     public void displaySongs() {
         mySongs = new ArrayList<>();
-        for(File f : findFiles(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))) {
-             mySongs.add(new Song(f));
+        for (File f : findFiles(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))) {
+            mySongs.add(new Song(f));
         }
         Collections.reverse(mySongs);
 
@@ -86,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
 
         AdapterData adapter = new AdapterData(mySongs);
         adapter.setOnClickListener(view -> {
-                isPlaying = true;
-                MediaPlayerManager.setSongPosition(recycler.getChildAdapterPosition(view));
-                MediaPlayerManager.playSong(this,
+            isPlaying = true;
+            MediaPlayerManager.setSongPosition(recycler.getChildAdapterPosition(view));
+            MediaPlayerManager.playSong(this,
                     mySongs.get(MediaPlayerManager.getSongPosition()).getFileUri(),
                     MediaPlayerManager.getSongPosition(),
                     mySongs);
@@ -118,20 +118,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void musicNotificationControl() {
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getExtras().getString("actionname");
-                System.out.println(action);
 
                 switch (action) {
                     case MusicNotification.ACTION_PREVIOUS:
-                        if(MediaPlayerManager.getSongPosition() != 0) {
+                        if (MediaPlayerManager.getSongPosition() != 0) {
                             MediaPlayerManager.previusSong(context);
                         }
                         break;
                     case MusicNotification.ACTION_PLAY:
-                        if(isPlaying) {
+                        if (isPlaying) {
                             MediaPlayerManager.pauseSong(context);
                             isPlaying = false;
                         } else {
@@ -144,12 +143,13 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case MusicNotification.ACTION_DELETE:
                         MediaPlayerManager.stopMusic();
+                        MusicNotification.destroyNotification();
                         break;
                 }
             }
         };
 
-        registerReceiver(broadcastReceiver, new IntentFilter("TRACKS_TRACKS"));
+        registerReceiver(broadcastReceiver1, new IntentFilter("TRACKS_TRACKS"));
 
     }
 
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(DownloadActivity.downloadThreads != null) {
+        if (DownloadActivity.downloadThreads != null) {
             for (LaunchYtDownload thread : DownloadActivity.downloadThreads) {
                 if (thread.getThread().isAlive()) {
                     thread.killDownloadProcess();

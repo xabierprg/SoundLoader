@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-//import android.support.v4.media.session.MediaSessionCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import com.example.soundloader.R;
@@ -23,6 +22,7 @@ public class MusicNotification {
     public static final String ACTION_DELETE = "actiondelete";
     public static NotificationManager notificationManager;
     public static Notification notification;
+    public static boolean showing;
 
     /**
      * Create a notification channel.
@@ -74,10 +74,13 @@ public class MusicNotification {
                 .setContentText(song.getName())
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
+                .setColorized(false)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setDeleteIntent(pendingIntentDelete)
                 .addAction(drw_previous, "Previous", pendingIntentPrevius)
                 .addAction(playButton, "Play", pendingIntentPlay)
                 .addAction(drw_next, "Next", pendingIntentNext)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                     .setShowActionsInCompactView(0,1,2)
                     //.setMediaSession(mediaSession.getSessionToken())
@@ -86,6 +89,7 @@ public class MusicNotification {
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notificationManagerCompat.notify(CHANNEL_ID, notification);
+        showing = true;
     }
 
     public static void createNotificationChannel(Context ctx) {
@@ -101,6 +105,11 @@ public class MusicNotification {
 
     public static void destroyNotification() {
         notificationManager.cancel(CHANNEL_ID);
+        showing = false;
+    }
+
+    public static boolean getIsShowing() {
+        return showing;
     }
 
 }
