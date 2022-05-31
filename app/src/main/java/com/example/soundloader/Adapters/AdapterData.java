@@ -8,16 +8,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.soundloader.R;
 import com.example.soundloader.Models.Song;
-
 import java.util.ArrayList;
 
-public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData> implements View.OnClickListener {
+public class AdapterData
+        extends RecyclerView.Adapter<AdapterData.ViewHolderData>
+        implements View.OnClickListener, View.OnLongClickListener {
 
     ArrayList<Song> listSongs;
-    private View.OnClickListener listener;
+
+    private View.OnClickListener onClickListener;
+    private View.OnLongClickListener onLongClickListener;
 
     public AdapterData(ArrayList<Song> listSongs) {
         this.listSongs = listSongs;
@@ -30,6 +32,7 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
                 .inflate(R.layout.item_list,null,false);
 
         view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
 
         return new ViewHolderData(view);
     }
@@ -44,16 +47,29 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
         return listSongs.size();
     }
 
-    public void setOnClickListener(View.OnClickListener listener) {
-        this.listener = listener;
-    }
 
     @Override
     public void onClick(View view) {
-        if(listener != null) {
-            listener.onClick(view);
+        if(onClickListener != null) {
+            onClickListener.onClick(view);
         }
 
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        if(onLongClickListener != null) {
+            onLongClickListener.onLongClick(view);
+        }
+        return false;
+    }
+
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
+        this.onLongClickListener = onLongClickListener;
     }
 
     public static class ViewHolderData extends RecyclerView.ViewHolder {

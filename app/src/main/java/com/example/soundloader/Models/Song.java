@@ -8,9 +8,11 @@ import java.io.File;
 public class Song {
 
     private final String name;
+    private final File fileLocation;
     private final Uri fileUri;
 
     public Song(File fileLocation) {
+        this.fileLocation = fileLocation;
         this.fileUri = Uri.fromFile(fileLocation);
         this.name = fileLocation.getPath()
                 .replace(".mp3","")
@@ -31,6 +33,13 @@ public class Song {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Get the file location.
+     */
+    public File getFileLocation() {
+        return fileLocation;
     }
 
 }

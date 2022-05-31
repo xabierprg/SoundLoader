@@ -3,6 +3,7 @@ package com.example.soundloader.Services;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.KeyEvent;
 import com.example.soundloader.Managers.MediaPlayerManager;
 
@@ -16,12 +17,16 @@ public class MediaButtonActionService extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String intentAction = intent.getAction();
+        Log.d("path:","1");
         if (!intentAction.equals(Intent.ACTION_MEDIA_BUTTON)) return;
 
-        KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+        Log.d("path:","2");
+        KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
         if (event == null) return;
 
         if (event.getAction() != KeyEvent.ACTION_DOWN) return;
+
+        Log.d("path:","3");
 
         lastClick = currentClick;
         currentClick = System.currentTimeMillis();

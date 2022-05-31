@@ -2,6 +2,7 @@ package com.example.soundloader.Activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -41,6 +42,13 @@ public class DownloadActivity extends AppCompatActivity {
 
         EditText etUrl = findViewById(R.id.etUrl);
         etUrl.requestFocus();
+
+        Intent intent = getIntent();
+        String sharedText;
+        if (intent.getType().equals("text/plain") & intent.getExtras() != null) {
+            sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+            etUrl.setText(String.valueOf(sharedText));
+        }
 
         Button btnDownload = findViewById(R.id.btnDownload);
         btnDownload.setOnClickListener(view -> {

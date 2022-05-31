@@ -12,9 +12,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import com.example.soundloader.Adapters.AdapterData;
@@ -34,7 +34,7 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<Song> mySongs;
-    boolean isPlaying = false;
+    boolean onLongClick = false;
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -71,31 +71,42 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     /**
      * Display the main page song list.
      */
     public void displaySongs() {
         mySongs = new ArrayList<>();
         for (File f : findFiles(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))) {
-            Log.d("path:",f.getAbsolutePath());
             mySongs.add(new Song(f));
         }
         Collections.reverse(mySongs);
 
-        RecyclerView recycler = findViewById(R.id.songList);
-        recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
         AdapterData adapter = new AdapterData(mySongs);
-        adapter.setOnClickListener(view -> {
-            isPlaying = true;
-            MediaPlayerManager.setSongPosition(recycler.getChildAdapterPosition(view));
-            MediaPlayerManager.playSong(this,
-                    mySongs.get(MediaPlayerManager.getSongPosition()).getFileUri(),
-                    MediaPlayerManager.getSongPosition(),
-                    mySongs);
-        });
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false);
+
+        RecyclerView recycler = findViewById(R.id.songList);
+        recycler.setLayoutManager(linearLayoutManager);
         recycler.setAdapter(adapter);
+
+        adapter.setOnClickListener(view -> {
+            if(!onLongClick) {
+                MediaPlayerManager.setSongPosition(recycler.getChildAdapterPosition(view));
+                MediaPlayerManager.playSong(this,
+                        mySongs.get(MediaPlayerManager.getSongPosition()).getFileUri(),
+                        MediaPlayerManager.getSongPosition(),
+                        mySongs
+                );
+            } else {
+                view.setBackgroundColor(Color.GRAY);
+            }
+        });
+
+        adapter.setOnLongClickListener(view -> {
+            DialogManager.createDeleteSongDialog(this, mySongs.get(recycler.getChildAdapterPosition(view)));
+            return false;
+        });
+
     }
 
     /**
@@ -120,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void musicNotificationControl() {
-        BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getExtras().getString("actionname");
@@ -132,12 +143,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     case MusicNotification.ACTION_PLAY:
-                        if (isPlaying) {
+                        if (MediaPlayerManager.isPlaying()) {
                             MediaPlayerManager.pauseSong(context);
-                            isPlaying = false;
                         } else {
                             MediaPlayerManager.resumeSong(context);
-                            isPlaying = true;
                         }
                         break;
                     case MusicNotification.ACTION_NEXT:
@@ -151,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        registerReceiver(broadcastReceiver1, new IntentFilter("TRACKS_TRACKS"));
+        registerReceiver(broadcastReceiver, new IntentFilter("TRACKS_TRACKS"));
 
     }
 

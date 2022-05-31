@@ -47,7 +47,6 @@ public class LaunchYtDownload {
     public void downloadAudio() {
 
         thread = new Thread(() -> {
-
             try {
                 YoutubeJExtractor youtubeJExtractor = new YoutubeJExtractor();
                 VideoPlayerConfig videoData = youtubeJExtractor.extract(ytUrl.replace("https://youtu.be/", ""));

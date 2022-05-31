@@ -80,14 +80,11 @@ public class MusicNotification {
                 .addAction(drw_previous, "Previous", pendingIntentPrevius)
                 .addAction(playButton, "Play", pendingIntentPlay)
                 .addAction(drw_next, "Next", pendingIntentNext)
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                     .setShowActionsInCompactView(0,1,2)
                     //.setMediaSession(mediaSession.getSessionToken())
-                )
-                .build();
+                ).build();
 
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notificationManagerCompat.notify(CHANNEL_ID, notification);
         showing = true;
     }
@@ -104,7 +101,9 @@ public class MusicNotification {
     }
 
     public static void destroyNotification() {
-        notificationManager.cancel(CHANNEL_ID);
+        if (notificationManager == null) return;
+
+        notificationManager.cancelAll();
         showing = false;
     }
 
