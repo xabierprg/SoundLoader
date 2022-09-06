@@ -35,6 +35,12 @@ public class MediaPlayerManager {
 
     }
 
+    public static void restartSong(Context ctx) {
+        if (mediaPlayer != null) {
+            mediaPlayer.seekTo(0);
+        }
+    }
+
     public static void pauseSong(Context ctx) {
         if (mediaPlayer != null) {
             if (mediaPlayer.isPlaying()) {

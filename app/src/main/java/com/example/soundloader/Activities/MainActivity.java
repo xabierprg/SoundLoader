@@ -140,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
                     case MusicNotification.ACTION_PREVIOUS:
                         if (MediaPlayerManager.getSongPosition() != 0) {
                             MediaPlayerManager.previusSong(context);
+                        } else {
+                            MediaPlayerManager.restartSong(context);
                         }
                         break;
                     case MusicNotification.ACTION_PLAY:
@@ -154,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case MusicNotification.ACTION_DELETE:
                         MediaPlayerManager.stopMusic();
-                        MusicNotification.destroyNotification();
                         break;
                 }
             }

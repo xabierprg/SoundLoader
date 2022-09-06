@@ -45,9 +45,12 @@ public class DownloadActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String sharedText;
-        if (intent.getType().equals("text/plain") & intent.getExtras() != null) {
-            sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-            etUrl.setText(String.valueOf(sharedText));
+        if(intent.getExtras() != null) {
+            if (intent.getType().equals("text/plain")) {
+                System.out.println("inside");
+                sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                etUrl.setText(String.valueOf(sharedText));
+            }
         }
 
         Button btnDownload = findViewById(R.id.btnDownload);
